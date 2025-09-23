@@ -106,6 +106,10 @@ def courses():
         { "id": 3, "name": "Java Programming", "credits": 5 }
     ] 
     return jsonify(courses)
+    
+@app.route('/assets/<path:filename>')
+def serve_assets(filename):
+    return send_from_directory(os.path.join(app.static_folder, 'assets'), filename)
 
 
 @app.errorhandler(404)
