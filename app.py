@@ -131,8 +131,14 @@ def internal_error(error):
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react(path):
-    if path.startswith('api/') or path.startswith('assets/'):
+    if path.startswith('api/')
         return jsonify({"error": "Not found"}), 404
+    
+    file_path = os.path.join(app.static_folder, path)
+    if path != "" and os.path.exists(file_path):
+        return send_from_directory(app.static_folder, path)
+    
+    # Muuten index.html (React SPA)
     return send_from_directory(app.static_folder, 'index.html')
 
 
