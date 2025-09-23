@@ -43,7 +43,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Copy React build backend static-folder
-COPY --from=mypage /mypage/dist ./mypage/dist
+COPY --from=frontend /mypage/dist ./mypage/dist
 
 # Change ownership to non-root user (OpenShift will override the user ID)
 RUN chown -R appuser:appuser /app
