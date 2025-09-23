@@ -131,7 +131,7 @@ def internal_error(error):
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react(path):
-    if path.startswith('api/')
+    if path.startswith('api/'):
         return jsonify({"error": "Not found"}), 404
     
     file_path = os.path.join(app.static_folder, path)
