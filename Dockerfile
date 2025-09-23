@@ -2,6 +2,15 @@
 # Optimized for CSC's Rahti container platform
 # Uses non-root user and proper security settings
 
+# Build frontend
+FROM node:20 AS frontend
+WORKDIR /mypage
+COPY mypage/package*.json ./
+RUN npm install
+COPY mypage/ ./
+RUN npm run build
+
+# Build backend
 FROM python:3.11-slim
 
 # Metadata
@@ -16,17 +25,15 @@ ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
 ENV PORT=8080
 
+# Install system deps
+RUN apt-get update && apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/*
+
 # Create non-root user (required for Rahti)
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
 # Set working directory
 WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        curl \
-        && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies
 COPY requirements.txt .
@@ -34,6 +41,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
+
+# Copy React build backend static-folder
+COPY --from=mypage /mypage/dist ./mypage/dist
 
 # Change ownership to non-root user (OpenShift will override the user ID)
 RUN chown -R appuser:appuser /app
