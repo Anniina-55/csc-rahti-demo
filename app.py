@@ -106,7 +106,7 @@ def courses():
         { "id": 3, "name": "Java Programming", "credits": 5 }
     ] 
     return jsonify(courses)
-    
+
 @app.route('/assets/<path:filename>')
 def serve_assets(filename):
     return send_from_directory(os.path.join(app.static_folder, 'assets'), filename)
@@ -127,21 +127,14 @@ def internal_error(error):
                          error_code=500, 
                          error_message="Internal server error"), 500
 
-# Tämä route käsittelee kaikki reitit, jotka eivät ole API-reittejä
+# Tämä route käsittelee kaikki reitit, jotka eivät ole API tai assets reittejä
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react(path):
- # Jos pyyntö alkaa 'api/' kanssa, anna Flaskin käsitellä se normaalisti
-    if path.startswith('api/'):
+    if path.startswith('api/') or path.startswith('assets/'):
         return jsonify({"error": "Not found"}), 404
-        
-    # Jos tiedosto löytyy build-hakemistosta, palautetaan se
-    file_path = os.path.join(app.static_folder, path)
-    if path != "" and os.path.exists(file_path):
-        return send_from_directory(app.static_folder, path)
-    
-    # Muuten palautetaan index.html (React sovellus)
     return send_from_directory(app.static_folder, 'index.html')
+
 
 if __name__ == '__main__':
     # Get port from environment variable (Rahti sets this)
