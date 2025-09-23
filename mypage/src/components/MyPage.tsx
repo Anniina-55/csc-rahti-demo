@@ -30,7 +30,8 @@ const inputStyle= {
     padding: "8px",
     border: "1px solid #c530be",
     cursor: "pointer",
-    margin: "15px 25px 0 0"
+    margin: "15px 25px 0 0",
+    backgroundColor: "#fffdfd8e"
 }
 
 export default function MyPage() {
