@@ -26,7 +26,8 @@ logger = logging.getLogger(__name__)
 load_dotenv() # load .env file to environment
 
 # Create Flask application
-app = Flask(__name__, static_folder="mypage/dist", template_folder="templates")
+app = Flask(__name__, static_folder="mypage/dist")
+
 CORS(app)
 
 # Configuration
@@ -48,17 +49,6 @@ def get_system_info():
             'port': os.environ.get('PORT', '8080')
         }
     }
-
-@app.route('/')
-def home():
-    """Home page route"""
-    logger.info("Home page requested")
-    system_info = get_system_info()
-    return render_template('index.html', system_info=system_info)
-
-@app.route('/mypage')
-def mypage():
-    return app.send_static_file('react/index.html')
 
 @app.route('/health')
 def health_check():
@@ -107,11 +97,6 @@ def courses():
     ] 
     return jsonify(courses)
 
-@app.route('/assets/<path:filename>')
-def serve_assets(filename):
-    return send_from_directory(os.path.join(app.static_folder, 'assets'), filename)
-
-
 @app.errorhandler(404)
 def not_found(error):
     """404 error handler"""
@@ -129,7 +114,7 @@ def internal_error(error):
 
 # Tämä route käsittelee kaikki reitit, jotka eivät ole API tai assets reittejä
 @app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
+@app.route('/<path:path>') # whole url is taken and passed down to function as variable "path"
 def serve_react(path):
     if path.startswith('api/'):
         return jsonify({"error": "Not found"}), 404
